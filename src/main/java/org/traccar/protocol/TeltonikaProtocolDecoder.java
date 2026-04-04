@@ -466,25 +466,18 @@ public class TeltonikaProtocolDecoder extends BaseProtocolDecoder {
             }
 
         } else {
-            Date date = new Date(buf.readLong());
-            short priority = buf.readUnsignedByte();
-            double longitude = buf.readInt() / 10000000.0;
-            double latitude = buf.readInt() / 10000000.0;
 
-            if (longitude == 0.0 && latitude == 0.0) {
-                Position lastPosition = new Position();
-                lastPosition.setDeviceId(position.getDeviceId());
+            position.setTime(new Date(buf.readLong()));
 
+            position.set("priority", buf.readUnsignedByte());
+
+            position.setLongitude(buf.readInt() / 10000000.0);
+            position.setLatitude(buf.readInt() / 10000000.0);
+
+            if (position.getLongitude() == 0.0 && position.getLatitude() == 0.0) {
                 getLastLocation(position, null);
-
-                longitude = lastPosition.getLongitude();
-                latitude = lastPosition.getLatitude();
             }
 
-            position.setTime(date);
-            position.set("priority", priority);
-            position.setLongitude(longitude);
-            position.setLatitude(latitude);
             position.setAltitude(buf.readShort());
             position.setCourse(buf.readUnsignedShort());
 
